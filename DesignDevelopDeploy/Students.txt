@@ -1,3 +1,5 @@
 
-Sam,Curry,202333727,Passw0rd
-Greg,egor,123456789,plussword
+Sam,Curry,123,pass,1
+Sam,Curry,456,ssap,2
+Sam,Curry,789,password,3
+John,Smith,987,armadillo,2
