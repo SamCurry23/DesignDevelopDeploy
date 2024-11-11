@@ -10,6 +10,8 @@ string filePath = Path.Combine(projectRoot, "Students.txt");
 bool correctPassword = false;
 bool correctID = false;
 string personType = "";
+int logInCount = 0;
+
 
 Choices();
 void Choices()
@@ -78,6 +80,7 @@ void Register()
         writer.WriteLine(writeToText);
         writer.Flush();
     }    
+    Choices();
 }
 
 void LogIn(bool correctID, bool correctPassword, string[] wordArray)
@@ -85,10 +88,15 @@ void LogIn(bool correctID, bool correctPassword, string[] wordArray)
     Console.Clear();
     if (!correctID && !correctPassword)
     {
+        if (logInCount > 0)
+        {
+            Console.WriteLine("ID and Password was incorrect!");
+        }
         Console.WriteLine("Enter your ID number:");
         ID = Console.ReadLine();
         Console.WriteLine("Enter your Password:");
         Password = Console.ReadLine();
+        logInCount++;
         Search(ID, Password);
     }
     else if (!correctID && correctPassword) 
@@ -122,7 +130,7 @@ void Search(string ID, string password)
             string[] wordArray = line.Split(',');
             for (int i = 0; i < wordArray.Length; i++) 
             {
-                Console.WriteLine(wordArray[i]);
+                //Console.WriteLine(wordArray[i]);
                 if (ID == wordArray[i] && password == wordArray[i + 1])
                 {
                     Console.WriteLine($"You are {wordArray[i - 2]} {wordArray[i - 1]} with ID {ID} matching {wordArray[2]}");
@@ -155,15 +163,54 @@ void LoggedIn(string[] wordArray)
     if (typeID == "1")
     {
         personType = "Student";
+        StudentPage(wordArray);
     }
     else if (typeID == "2")
     {
         personType = "Personal Supervisor";
+        SupervisorPage(wordArray);
     }
     else if (typeID == "3")
     {
         personType = "Senior Tutor";
+        SeniorPage(wordArray);
     }
+}
+
+void StudentPage(string[] wordArray)
+{
+    Console.WriteLine("Welcome to the Student Page");
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
-    Console.ReadLine();
+    Console.WriteLine("1. Report your feelings");
+    Console.WriteLine("2. Book a meeting");
+    Console.WriteLine("3. Exit");
+}
+
+void ReportStatus()
+{
+    Console.WriteLine("1. Status Survey");
+    Console.WriteLine("2. Write a note");
+    userInput = int.Parse(Console.ReadLine());
+    if (userInput == 1)
+    {
+        Console.WriteLine("Welcome to the Status Survey, please answer each question out of ten");
+        Console.WriteLine("How do you feel about your course?");
+        Console.WriteLine("How do you feel about the pace of the course?");
+        Console.WriteLine("How do you feel about the coursework you have to complete");
+    }
+    else if (userInput == 2)
+    {
+
+    }
+}
+void SupervisorPage(string[] wordArray)
+{
+    Console.WriteLine("Welcome to the Personal Supervisor Page");
+    Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
+}
+
+void SeniorPage(string[] wordArray)
+{
+    Console.WriteLine("Welcome to the Senior Tutor Page");
+    Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
 }
