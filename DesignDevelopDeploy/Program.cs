@@ -6,11 +6,13 @@ string LastName;
 string writeToText;
 int typeID;
 string projectRoot = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-string filePath = Path.Combine(projectRoot, "Students.txt");
+string studentsFilePath = Path.Combine(projectRoot, "Students.txt");
+string notesFilePath = Path.Combine(projectRoot, "StudentNotes.txt");
 bool correctPassword = false;
 bool correctID = false;
 string personType = "";
 int logInCount = 0;
+string userText;
 
 
 Choices();
@@ -75,7 +77,7 @@ void Register()
     Password = Console.ReadLine();
     writeToText = (FirstName + "," + LastName + "," + ID + "," + Password + "," + typeID);
     Console.WriteLine(writeToText);
-    using (StreamWriter writer = new StreamWriter(filePath, true))
+    using (StreamWriter writer = new StreamWriter(studentsFilePath, true))
     {
         writer.WriteLine(writeToText);
         writer.Flush();
@@ -101,7 +103,7 @@ void LogIn(bool correctID, bool correctPassword, string[] wordArray)
     }
     else if (!correctID && correctPassword) 
     {
-        Console.WriteLine("Incorrect ID your account might not exist would you like to register an account?");
+        Console.WriteLine("Incorrect ID your account might not exist, would you like to register an account?");
         Choices();
     }
     else if (correctID && !correctPassword)
@@ -122,7 +124,7 @@ void LogIn(bool correctID, bool correctPassword, string[] wordArray)
 
 void Search(string ID, string password)
 {
-    using (StreamReader reader = new StreamReader(filePath, true))
+    using (StreamReader reader = new StreamReader(studentsFilePath, true))
     {
         string line;
         while ((line = reader.ReadLine()) != null)
@@ -184,23 +186,77 @@ void StudentPage(string[] wordArray)
     Console.WriteLine("1. Report your feelings");
     Console.WriteLine("2. Book a meeting");
     Console.WriteLine("3. Exit");
+    userInput = int.Parse(Console.ReadLine());
+    if (userInput == 1)
+    {
+        ReportStatus();
+    }
+    else if (userInput == 2)
+    {
+
+    }
+    else if (userInput == 3)
+    {
+        
+    }
 }
 
 void ReportStatus()
 {
     Console.WriteLine("1. Status Survey");
     Console.WriteLine("2. Write a note");
+    int[] feelingsArray = new int[10];
+    int userScore = 0;
     userInput = int.Parse(Console.ReadLine());
     if (userInput == 1)
     {
         Console.WriteLine("Welcome to the Status Survey, please answer each question out of ten");
         Console.WriteLine("How do you feel about your course?");
+        feelingsArray[0] = int.Parse(Console.ReadLine());
         Console.WriteLine("How do you feel about the pace of the course?");
-        Console.WriteLine("How do you feel about the coursework you have to complete");
+        feelingsArray[1] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about the coursework you have to complete?");
+        feelingsArray[2] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about the amount of resources available to you?");
+        feelingsArray[3] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about the content covered in lectures?");
+        feelingsArray[4] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about your progress in labs?");
+        feelingsArray[5] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about your living standards?");
+        feelingsArray[6] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about your financial situation?");
+        feelingsArray[7] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about the support systems in place?");
+        feelingsArray[8] = int.Parse(Console.ReadLine());
+        Console.WriteLine("How do you feel about your accessibility onsite?");
+        feelingsArray[9] = int.Parse(Console.ReadLine());
+        for (int i = 0; i < 10; i++)
+        {
+            userScore += feelingsArray[i];
+        }
+        Console.WriteLine(userScore);
+        if (userScore < 50)
+        {
+            Console.WriteLine("Your total score was less than 50 please provide a more detailed reasoning for your answers:");
+            makeNote();
+        }
     }
     else if (userInput == 2)
     {
+        makeNote();
+    }
+}
 
+void makeNote()
+{
+    Console.WriteLine("Please type your note on the following line.");
+    userText = Console.ReadLine();
+    userText = userText + ",";
+    using (StreamWriter writer = new StreamWriter(notesFilePath, true))
+    {
+        writer.WriteLine(userText);
+        writer.Flush();
     }
 }
 void SupervisorPage(string[] wordArray)
