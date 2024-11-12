@@ -8,6 +8,7 @@ int typeID;
 string projectRoot = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 string studentsFilePath = Path.Combine(projectRoot, "Students.txt");
 string notesFilePath = Path.Combine(projectRoot, "StudentNotes.txt");
+string meetingFilePath = Path.Combine(projectRoot, "Meetings.txt");
 bool correctPassword = false;
 bool correctID = false;
 string personType = "";
@@ -270,6 +271,7 @@ void bookMeeting(string[] wordArray)
     using (StreamReader reader = new StreamReader(studentsFilePath, true))
     {
         string line;
+        string text = "";
         List<string> words = new List<string>();
         while ((line = reader.ReadLine()) != null)
         {
@@ -280,13 +282,33 @@ void bookMeeting(string[] wordArray)
                 words.Add(toArray);
             }        
         }
+        string[] personalSupervisors = new string[words.Count];
         for (int i = 0; i < words.Count; i++)
         {
-            string[] personalSupervisors = words[i].Split(",");
-
+            personalSupervisors[i] = words[i];
         }
-        Console.WriteLine(words[0]);
-        Console.WriteLine(words[1]);
+        Console.WriteLine(personalSupervisors[0]);
+        Console.WriteLine(personalSupervisors[1]);
+        for (int i = 0; i < personalSupervisors.Length; i++)
+        {
+            string[] tempArray = personalSupervisors[i].Split(',');
+            Console.WriteLine($"{i+1}. {tempArray[0]} {tempArray[1]}");
+        }
+        userInput = int.Parse(Console.ReadLine());
+        for (int i = 0; i < personalSupervisors.Length; i++)
+        {
+            string[] tempArray = personalSupervisors[userInput - 1].Split(',');
+            text = $"{wordArray[2]},{tempArray[2]}";
+        }
+        Console.WriteLine("What time would you like the meeting to be? Choose an hour between 10 and 18");
+        string meetingTime = Console.ReadLine();
+        text = text + "," + meetingTime +":00";
+        Console.WriteLine(text);
+        using (StreamWriter writer = new StreamWriter(meetingFilePath, true))
+        {
+            writer.WriteLine(text);
+            writer.Flush();
+        }
     }
 }
 
@@ -294,6 +316,21 @@ void SupervisorPage(string[] wordArray)
 {
     Console.WriteLine("Welcome to the Personal Supervisor Page");
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
+    using (StreamReader reader = new StreamReader(studentsFilePath, true))
+    {
+        string line = "";
+        List<string> students = new List<string>();
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] testArray = line.Split(',');
+            if (testArray[4] == "1")
+            {
+                string toArray = testArray[0] + "," + testArray[1] + "," + testArray[2];
+                students.Add(toArray);
+            }
+        }
+
+    }
 }
 
 void SeniorPage(string[] wordArray)
