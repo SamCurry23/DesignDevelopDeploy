@@ -189,11 +189,11 @@ void StudentPage(string[] wordArray)
     userInput = int.Parse(Console.ReadLine());
     if (userInput == 1)
     {
-        ReportStatus();
+        ReportStatus(wordArray);
     }
     else if (userInput == 2)
     {
-
+        bookMeeting(wordArray);
     }
     else if (userInput == 3)
     {
@@ -201,7 +201,7 @@ void StudentPage(string[] wordArray)
     }
 }
 
-void ReportStatus()
+void ReportStatus(string[] wordArray)
 {
     Console.WriteLine("1. Status Survey");
     Console.WriteLine("2. Write a note");
@@ -239,26 +239,57 @@ void ReportStatus()
         if (userScore < 50)
         {
             Console.WriteLine("Your total score was less than 50 please provide a more detailed reasoning for your answers:");
-            makeNote();
+            makeNote(wordArray);
         }
+        Console.WriteLine("Press any key to go back");
+        Console.ReadKey();
+        StudentPage(wordArray);
     }
     else if (userInput == 2)
     {
-        makeNote();
+        makeNote(wordArray);
     }
 }
 
-void makeNote()
+void makeNote(string[] wordArray)
 {
     Console.WriteLine("Please type your note on the following line.");
     userText = Console.ReadLine();
-    userText = userText + ",";
+    string currentTime = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
+    userText = userText + "," + wordArray[2] + "," + currentTime;
     using (StreamWriter writer = new StreamWriter(notesFilePath, true))
     {
         writer.WriteLine(userText);
         writer.Flush();
     }
 }
+
+void bookMeeting(string[] wordArray)
+{
+    Console.WriteLine("Who would you like to book a meeting with?");
+    using (StreamReader reader = new StreamReader(studentsFilePath, true))
+    {
+        string line;
+        List<string> words = new List<string>();
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] newArray = line.Split(',');
+            if (newArray[4] == "2")
+            {
+                string toArray = newArray[0] + "," + newArray[1] + "," + newArray[2];
+                words.Add(toArray);
+            }        
+        }
+        for (int i = 0; i < words.Count; i++)
+        {
+            string[] personalSupervisors = words[i].Split(",");
+
+        }
+        Console.WriteLine(words[0]);
+        Console.WriteLine(words[1]);
+    }
+}
+
 void SupervisorPage(string[] wordArray)
 {
     Console.WriteLine("Welcome to the Personal Supervisor Page");
