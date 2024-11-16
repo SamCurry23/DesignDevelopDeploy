@@ -17,7 +17,9 @@ string userText;
 
 
 Choices();
-void Choices()
+
+
+void Choices() // Method that gives the user the initial choices when using the program
 {
     Console.Clear();
     Console.WriteLine("1. Log In");
@@ -194,7 +196,8 @@ void StudentPage(string[] wordArray)
     }
     else if (userInput == 2)
     {
-        bookMeeting(wordArray);
+        string meetingType = "2";
+        bookMeeting(wordArray, meetingType);
     }
     else if (userInput == 3)
     {
@@ -204,6 +207,7 @@ void StudentPage(string[] wordArray)
 
 void ReportStatus(string[] wordArray)
 {
+    Console.Clear();
     Console.WriteLine("1. Status Survey");
     Console.WriteLine("2. Write a note");
     int[] feelingsArray = new int[10];
@@ -237,6 +241,13 @@ void ReportStatus(string[] wordArray)
             userScore += feelingsArray[i];
         }
         Console.WriteLine(userScore);
+        string currentTime = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
+        string note = "UserScore" + "," + wordArray[2] + "," + currentTime + "," + userScore;
+        using (StreamWriter writer = new StreamWriter(notesFilePath, true))
+        {
+            writer.WriteLine(note);
+            writer.Flush();
+        }
         if (userScore < 50)
         {
             Console.WriteLine("Your total score was less than 50 please provide a more detailed reasoning for your answers:");
@@ -254,6 +265,7 @@ void ReportStatus(string[] wordArray)
 
 void makeNote(string[] wordArray)
 {
+    Console.Clear();
     Console.WriteLine("Please type your note on the following line.");
     userText = Console.ReadLine();
     string currentTime = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
@@ -265,8 +277,9 @@ void makeNote(string[] wordArray)
     }
 }
 
-void bookMeeting(string[] wordArray)
+void bookMeeting(string[] wordArray, string meetingType)
 {
+    Console.Clear();
     Console.WriteLine("Who would you like to book a meeting with?");
     using (StreamReader reader = new StreamReader(studentsFilePath, true))
     {
@@ -276,7 +289,7 @@ void bookMeeting(string[] wordArray)
         while ((line = reader.ReadLine()) != null)
         {
             string[] newArray = line.Split(',');
-            if (newArray[4] == "2")
+            if (newArray[4] == meetingType)
             {
                 string toArray = newArray[0] + "," + newArray[1] + "," + newArray[2];
                 words.Add(toArray);
@@ -314,22 +327,170 @@ void bookMeeting(string[] wordArray)
 
 void SupervisorPage(string[] wordArray)
 {
+    string studentID = "";
+    int userScore = 0;
+    string FullName = "";
+    List<string> notes = new List<string>();
+    List<string> times = new List<string>();
     Console.WriteLine("Welcome to the Personal Supervisor Page");
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
-    using (StreamReader reader = new StreamReader(studentsFilePath, true))
+    Console.WriteLine("1. Book a meeting");
+    Console.WriteLine("2. Review student status");
+    userInput = int.Parse(Console.ReadLine());
+    Console.Clear();
+    if (userInput == 1)
     {
-        string line = "";
-        List<string> students = new List<string>();
-        while ((line = reader.ReadLine()) != null)
+        string meetingType = "1";
+        bookMeeting(wordArray, meetingType);
+    }
+    if (userInput == 2)
+    {
+        using (StreamReader reader = new StreamReader(studentsFilePath, true))
         {
-            string[] testArray = line.Split(',');
-            if (testArray[4] == "1")
+            string line;
+            string text = "";
+            List<string> words = new List<string>();
+            while ((line = reader.ReadLine()) != null)
             {
-                string toArray = testArray[0] + "," + testArray[1] + "," + testArray[2];
-                students.Add(toArray);
+                string[] newArray = line.Split(',');
+                if (newArray[4] == "1")
+                {
+                    string toArray = newArray[0] + "," + newArray[1] + "," + newArray[2];
+                    FullName = newArray[0] + " " + newArray[1];
+                    words.Add(toArray);
+                }
+            }
+            string[] personalSupervisors = new string[words.Count];
+            for (int i = 0; i < words.Count; i++)
+            {
+                personalSupervisors[i] = words[i];
+            }
+            for (int i = 0; i < personalSupervisors.Length; i++)
+            {
+                string[] tempArray = personalSupervisors[i].Split(',');
+                Console.WriteLine($"{i + 1}. {tempArray[0]} {tempArray[1]}");
+            }
+            userInput = int.Parse(Console.ReadLine());
+            for (int i = 0; i < personalSupervisors.Length; i++)
+            {
+                string[] tempArray = personalSupervisors[userInput - 1].Split(',');
+                text = $"{wordArray[2]},{tempArray[2]}";
+                studentID = tempArray[2];
+            }
+            //Console.WriteLine(studentID);
+        }
+        using (StreamReader reader = new StreamReader(notesFilePath, true))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] newArray = line.Split(',');
+                if (newArray[0] == "UserScore" && newArray[1] == studentID)
+                {
+                    userScore = int.Parse(newArray[3]);
+                }
+                else if (newArray[1] == studentID && !(newArray[0] == "UserScore"))
+                {
+                    notes.Add(newArray[0]);
+                    times.Add(newArray[2]);
+                }
             }
         }
+        using (StreamReader reader = new StreamReader(studentsFilePath, true))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] newArray = line.Split(',');
+                if (newArray[4] == "1" && newArray[2] == studentID)
+                {
+                    FullName = newArray[0] + " " + newArray[1];
+                }
+            }
+        }
+        //Console.WriteLine(userScore);
+        //Console.WriteLine(FullName);
+        Console.Clear();
+        Console.WriteLine($"{FullName} has a total user score of {userScore}.");
+        Console.WriteLine("1. Book a meeting");
+        Console.WriteLine("2. View your meetings");
+        Console.WriteLine("3. View notes");
+        userInput = int.Parse(Console.ReadLine());
+        if (userInput == 1)
+        {
+            string meetingType = "1";
+            bookMeeting(wordArray, meetingType);
+        }
+        if (userInput == 2)
+        {
+            string supervisorID = wordArray[2];
+            meetings(supervisorID, studentID);
+        }
+        if (userInput == 3)
+        {
+            using (StreamReader reader = new StreamReader(notesFilePath, true))
+            {
+                string line;
+                List<string> words = new List<string>();
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] newArray = line.Split(',');
+                    if (newArray[1] == studentID && !(newArray[0] == "UserScore"))
+                    {
+                        string text = $"Note created at {newArray[2]}, Full note: {newArray[0]}";
+                        words.Add(text);
+                    }
+                }
+                string[] finalArray = words.ToArray();
+                for (int i = 0; i < finalArray.Length; i++)
+                {
+                    Console.WriteLine($"Note {i+1}: {finalArray[i]}");
+                }
+            }
+        }
+        
+    }
+}
 
+void meetings(string supervisorID, string studentID)
+{
+    string studentName = "";
+    string supervisorName = "";
+    string meetingTime = "";
+    List<string> words = new List<string>();
+    using (StreamReader reader = new StreamReader(meetingFilePath, true))
+    {
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] newArray = line.Split(',');
+            if (newArray[0] == supervisorID && newArray[1] == studentID || newArray[1] == supervisorID && newArray[0] == studentID)
+            {
+                words.Add(newArray[0] + "," + newArray[1] + "," + newArray[2]);
+            }
+        }
+    }
+    using (StreamReader reader = new StreamReader(studentsFilePath, true))
+    {
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] newArray = line.Split(',');
+            if (newArray[2] == studentID)
+            {
+                studentName = newArray[0] + " " + newArray[1];
+            }
+            else if (newArray[2] == supervisorID)
+            {
+                supervisorName = newArray[0] + " " + newArray[1];
+            }
+        }
+    }
+    string[] finalArray = words.ToArray();
+    for (int i = 0; i < finalArray.Length; i++)
+    {
+        string[] newArray = finalArray[i].Split(",");
+        Console.WriteLine($"{supervisorName} has a meeting with {studentName} at {newArray[2]}");
     }
 }
 
@@ -337,4 +498,46 @@ void SeniorPage(string[] wordArray)
 {
     Console.WriteLine("Welcome to the Senior Tutor Page");
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
+    Console.WriteLine("Which supervisor would you like to view?");
+    using (StreamReader reader = new StreamReader(studentsFilePath, true))
+    {
+        string line;
+        string text = "";
+        List<string> words = new List<string>();
+        List<string> students = new List<string>();
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] newArray = line.Split(',');
+            if (newArray[4] == "2")
+            {
+                string toArray = newArray[0] + "," + newArray[1] + "," + newArray[2];
+                words.Add(toArray);
+            }
+            if (newArray[4] == "1")
+            {
+                students.Add(newArray[2]);
+            }
+        }
+        string[] personalSupervisors = new string[words.Count];
+        for (int i = 0; i < words.Count; i++)
+        {
+            personalSupervisors[i] = words[i];
+        }
+        for (int i = 0; i < personalSupervisors.Length; i++)
+        {
+            string[] tempArray = personalSupervisors[i].Split(',');
+            Console.WriteLine($"{i + 1}. {tempArray[0]} {tempArray[1]}");
+        }
+        userInput = int.Parse(Console.ReadLine());
+        for (int i = 0; i < personalSupervisors.Length; i++)
+        {
+            string[] tempArray = personalSupervisors[userInput - 1].Split(',');
+            text = tempArray[2];
+        }
+        string[] idArray = students.ToArray();
+        for (int i = 0; i < idArray.Length; i++)
+        {
+            meetings(text, idArray[i]);
+        }
+    }
 }
