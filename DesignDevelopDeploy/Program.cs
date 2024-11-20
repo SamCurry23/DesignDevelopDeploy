@@ -15,8 +15,17 @@ string personType = "";
 int logInCount = 0;
 string userText;
 
+Console.WriteLine("Testing Y/N");
+userInput = int.Parse(Console.ReadLine());
+if (userInput.ToString() == "Y")
+{
 
-Choices();
+}
+else if (userInput.ToString() == "N")
+{
+    Choices();
+}
+
 
 
 void Choices() // Method that gives the user the initial choices when using the program
@@ -536,4 +545,3 @@ void SeniorPage(string[] wordArray)
         }
     }
 }
-        
