@@ -3,3 +3,9 @@ Tyler,Lewis,321,apple,1
 Oliver,Redhead,456,orange,2
 John,Whelan,789,DDD,3
 Boris,Green,999,mark,2
+Sam,Curry,1111,password,1
+Sam,Curry,9999,password,1
+John,Smith,123456,password,2
+Jane,Smith,1212,password,3
+joe,oliver,123321,password,2
+blue,green,090,password,1

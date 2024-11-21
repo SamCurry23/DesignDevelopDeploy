@@ -1,4 +1,5 @@
-﻿int userInput;
+﻿
+int userInput;
 string ID;
 string Password;
 string FirstName;
@@ -15,13 +16,12 @@ string personType = "";
 int logInCount = 0;
 string userText;
 
+
 Choices();
-
-
 
 void Choices() // Method that gives the user the initial choices when using the program
 {
-    Console.Clear();
+    string[] wordArray = { };
     Console.WriteLine("1. Log In");
     Console.WriteLine("2. Register New User");
     Console.WriteLine("3. Exit");
@@ -30,7 +30,6 @@ void Choices() // Method that gives the user the initial choices when using the 
 
     if (userInput == 1) // User selects login and an empty array is created to store their information
     {
-        string[] wordArray = { };
         LogIn(correctID, correctPassword, wordArray);
     }
     else if (userInput == 2)
@@ -50,7 +49,6 @@ void Choices() // Method that gives the user the initial choices when using the 
 
 void Register()
 {
-    Console.Clear();
     typeID = 0;
     Console.WriteLine("1. Student");
     Console.WriteLine("2. Personal Supervisor");
@@ -82,14 +80,13 @@ void Register()
     {
         writer.WriteLine(writeToText);
         writer.Flush();
-    }    
+    }
     Choices();
 }
 
 // This method allows the user to log in if they input the correct details
 void LogIn(bool correctID, bool correctPassword, string[] wordArray)
 {
-    Console.Clear();
     if (!correctID && !correctPassword)
     {
         if (logInCount > 0)
@@ -103,7 +100,7 @@ void LogIn(bool correctID, bool correctPassword, string[] wordArray)
         logInCount++;
         Search(ID, Password);
     }
-    else if (!correctID && correctPassword) 
+    else if (!correctID && correctPassword)
     {
         Console.WriteLine("Incorrect ID your account might not exist, would you like to register an account?");
         Choices();
@@ -132,7 +129,7 @@ void Search(string ID, string password)
         while ((line = reader.ReadLine()) != null)
         {
             string[] wordArray = line.Split(',');
-            for (int i = 0; i < wordArray.Length; i++) 
+            for (int i = 0; i < wordArray.Length; i++)
             {
                 if (ID == wordArray[i] && password == wordArray[i + 1])
                 {
@@ -142,7 +139,7 @@ void Search(string ID, string password)
                     correctPassword = true;
                     LogIn(correctID, correctPassword, wordArray);
                 }
-                else if (ID == wordArray[i] && password != wordArray[i+1])
+                else if (ID == wordArray[i] && password != wordArray[i + 1])
                 {
                     correctID = true;
                     correctPassword = false;
@@ -161,7 +158,6 @@ void Search(string ID, string password)
 
 void LoggedIn(string[] wordArray) // Chcecks what kind of user logged in and takes them to the appropriate page
 {
-    Console.Clear();
     string typeID = wordArray[4];
     if (typeID == "1")
     {
@@ -186,7 +182,7 @@ void StudentPage(string[] wordArray)  // Page that a student can access once log
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
     Console.WriteLine("1. Report your feelings");
     Console.WriteLine("2. Book a meeting");
-    Console.WriteLine("3. Exit");
+    Console.WriteLine("3. Log Out");
     userInput = int.Parse(Console.ReadLine());
     if (userInput == 1)
     {
@@ -197,14 +193,17 @@ void StudentPage(string[] wordArray)  // Page that a student can access once log
         string meetingType = "2";
         bookMeeting(wordArray, meetingType);
     }
-    else if (userInput == 3) { }
+    else if (userInput == 3)
+    {
+        Choices();
+    }
 }
 
 void ReportStatus(string[] wordArray)
 {
-    Console.Clear();
     Console.WriteLine("1. Status Survey");
     Console.WriteLine("2. Write a note");
+    Console.WriteLine("3. Go Back");
     int[] feelingsArray = new int[10];
     int userScore = 0;
     userInput = int.Parse(Console.ReadLine());
@@ -256,11 +255,14 @@ void ReportStatus(string[] wordArray)
     {
         makeNote(wordArray);
     }
+    else if(userInput == 3) 
+    {
+        StudentPage(wordArray);
+    }
 }
 
 void makeNote(string[] wordArray) // Allows the student to write a note of anything which a personal supervisor can view later
 {
-    Console.Clear();
     Console.WriteLine("Please type your note on the following line.");
     userText = Console.ReadLine();
     string currentTime = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
@@ -270,11 +272,11 @@ void makeNote(string[] wordArray) // Allows the student to write a note of anyth
         writer.WriteLine(userText);
         writer.Flush();
     }
+    ReportStatus(wordArray);
 }
 
 void bookMeeting(string[] wordArray, string meetingType) // Searches through the list of users to present either a list of personal supervisors to book meetings with or a list of students
 {
-    Console.Clear();
     Console.WriteLine("Who would you like to book a meeting with?");
     using (StreamReader reader = new StreamReader(studentsFilePath, true))
     {
@@ -288,7 +290,7 @@ void bookMeeting(string[] wordArray, string meetingType) // Searches through the
             {
                 string toArray = newArray[0] + "," + newArray[1] + "," + newArray[2];
                 words.Add(toArray);
-            }        
+            }
         }
         string[] personalSupervisors = new string[words.Count];
         for (int i = 0; i < words.Count; i++)
@@ -300,7 +302,7 @@ void bookMeeting(string[] wordArray, string meetingType) // Searches through the
         for (int i = 0; i < personalSupervisors.Length; i++)
         {
             string[] tempArray = personalSupervisors[i].Split(',');
-            Console.WriteLine($"{i+1}. {tempArray[0]} {tempArray[1]}");
+            Console.WriteLine($"{i + 1}. {tempArray[0]} {tempArray[1]}");
         }
         userInput = int.Parse(Console.ReadLine()); // User chooses who they want to book a meeting with
         for (int i = 0; i < personalSupervisors.Length; i++)
@@ -310,7 +312,7 @@ void bookMeeting(string[] wordArray, string meetingType) // Searches through the
         }
         Console.WriteLine("What time would you like the meeting to be? Choose an hour between 10 and 18");
         string meetingTime = Console.ReadLine();
-        text = text + "," + meetingTime +":00";
+        text = text + "," + meetingTime + ":00";
         Console.WriteLine(text);
         using (StreamWriter writer = new StreamWriter(meetingFilePath, true))
         {
@@ -318,6 +320,15 @@ void bookMeeting(string[] wordArray, string meetingType) // Searches through the
             writer.Flush();
         }
     }
+    if (meetingType == "1")
+    {
+        SupervisorPage(wordArray);
+    }
+    else if (meetingType == "2")
+    {
+        StudentPage(wordArray);
+    }
+
 }
 
 void SupervisorPage(string[] wordArray)
@@ -331,8 +342,12 @@ void SupervisorPage(string[] wordArray)
     Console.WriteLine($"You have logged in as a {personType} called {wordArray[0]} {wordArray[1]} with ID:{wordArray[2]}");
     Console.WriteLine("1. Book a meeting");
     Console.WriteLine("2. Review student status");
+    Console.WriteLine("3. Log Out");
     userInput = int.Parse(Console.ReadLine());
-    Console.Clear();
+    if (userInput == 3)
+    {
+        Choices();
+    }
     if (userInput == 1)
     {
         string meetingType = "1";
@@ -405,12 +420,16 @@ void SupervisorPage(string[] wordArray)
         }
         //Console.WriteLine(userScore);
         //Console.WriteLine(FullName);
-        Console.Clear();
         Console.WriteLine($"{FullName} has a total user score of {userScore}.");
         Console.WriteLine("1. Book a meeting");
         Console.WriteLine("2. View your meetings");
         Console.WriteLine("3. View notes");
+        Console.WriteLine("4. Go Back");
         userInput = int.Parse(Console.ReadLine());
+        if (userInput == 4)
+        {
+            SupervisorPage(wordArray);
+        }
         if (userInput == 1)
         {
             string meetingType = "1";
@@ -439,11 +458,11 @@ void SupervisorPage(string[] wordArray)
                 string[] finalArray = words.ToArray();
                 for (int i = 0; i < finalArray.Length; i++)
                 {
-                    Console.WriteLine($"Note {i+1}: {finalArray[i]}");
+                    Console.WriteLine($"Note {i + 1}: {finalArray[i]}");
                 }
             }
         }
-        
+
     }
 }
 
