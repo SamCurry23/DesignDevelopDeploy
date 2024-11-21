@@ -15,16 +15,7 @@ string personType = "";
 int logInCount = 0;
 string userText;
 
-Console.WriteLine("Testing Y/N");
-userInput = int.Parse(Console.ReadLine());
-if (userInput.ToString() == "Y")
-{
-
-}
-else if (userInput.ToString() == "N")
-{
-    Choices();
-}
+Choices();
 
 
 
